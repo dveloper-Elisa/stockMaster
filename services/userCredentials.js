@@ -1,5 +1,7 @@
 require("../models/dbConnection");
 
+const bcrypt = require("bcrypt");
+
 const Users = require("../models/users");
 
 const getLogin = async (req, res) => {
@@ -8,6 +10,8 @@ const getLogin = async (req, res) => {
       userName: req.body.userName,
       password: req.body.password,
     };
+
+    // const matchPassword = await bcrypt.compare(user.password, await Use)
 
     const userExists = await Users.findOne({
       userName: user.userName,
@@ -35,10 +39,11 @@ const getLogin = async (req, res) => {
 
 const getSignUp = async (req, res) => {
   try {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const users = {
       userName: req.body.userName,
       email: req.body.email,
-      password: req.body.password,
+      password: hashedPassword,
     };
 
     const userExists = await Users.findOne({ userName: users.userName });
