@@ -8,6 +8,7 @@ const router = express.Router();
 
 const getProducts = require("../services/productService");
 const getUsers = require("../services/userCredentials");
+const soldedProduct = require("../services/saleServices");
 
 // ==============================================
 
@@ -32,6 +33,17 @@ router.put("/search/:id", getProducts.updateProductById);
 
 // deleting product from the store
 router.delete("/search/:id", getProducts.deletingProduct);
+
+// ==========================================================
+// routes for the sold product
+
+router.post(
+  "/sales/sell",
+  soldedProduct.updatingTheProduct,
+  soldedProduct.soldProduct
+);
+
+// ==========================================================
 
 // exporting router
 module.exports = router;

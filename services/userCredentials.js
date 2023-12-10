@@ -13,21 +13,21 @@ const getLogin = async (req, res) => {
 
     // const matchPassword = await bcrypt.compare(user.password, await Use)
 
-    const userExists = await Users.findOne({
-      userName: user.userName,
-      password: user.password,
-    });
+    const usersName = await Users.findOne({ userName: req.body.userName });
+    const matchPassword = await bcrypt.compare(
+      user.password,
+      usersName.password
+    );
 
-    if (!userExists) {
-      return res.status(404).json({
-        message: `user with Uname:${user.userName} not Exists, please Sign up`,
+    if (!matchPassword) {
+      return res.status(401).json({
+        message: `userName or password not correct!, please Sign up`,
       });
-    }
-
-    res.status(200).json({
-      status: "Welcome to Home page👏",
-      message: "user Loged in successfully",
-    });
+    } else
+      return res.status(200).json({
+        status: "Welcome to Home page👏",
+        message: "user Loged in successfully",
+      });
   } catch (error) {
     res
       .status(500)
@@ -49,7 +49,9 @@ const getSignUp = async (req, res) => {
     const userExists = await Users.findOne({ userName: users.userName });
     if (!userExists) {
       const createUser = await Users.create(users);
-      res.status(200).json({ message: "User Created successfully" });
+      return res
+        .status(200)
+        .json({ message: "User Created successfully 👏", user: createUser });
     }
     res.status(500).json({
       mesage: `User with ${users.userName} already exists🤞,please Login 👈`,

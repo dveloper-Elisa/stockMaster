@@ -4,6 +4,7 @@ require("../models/dbConnection");
 // importing product Schema from Module
 const Product = require("../models/productModel");
 
+// displaying products
 const getProducts = async (req, res) => {
   try {
     const allProducts = await Product.find({});
@@ -14,7 +15,6 @@ const getProducts = async (req, res) => {
 };
 
 // searching product by id
-
 const getProductById = async (req, res) => {
   try {
     let { id } = req.params;
@@ -43,13 +43,23 @@ const addNewProduct = async (req, res) => {
       quantity: req.body.quantity,
       pricePerUnit: req.body.pricePerUnit,
     };
-    // adding total price to ProductAdded object
-    productAdded.totalPrice = productAdded.quantity * productAdded.pricePerUnit;
 
-    const product = await Product.create(productAdded);
-    res
-      .status(200)
-      .json({ mesage: "Product recorded successfully", product: product });
+    // checking if the product is already added in database
+    const productAlreadyAdded = await Product.findOne({ name: req.body.name });
+    if (productAlreadyAdded) {
+      res.status(403).json({
+        message: `Product ${req.body.name} already Exists, please update`,
+      });
+    } else {
+      // adding total price to ProductAdded object
+      productAdded.totalPrice =
+        productAdded.quantity * productAdded.pricePerUnit;
+
+      const product = await Product.create(productAdded);
+      res
+        .status(200)
+        .json({ mesage: "Product recorded successfully", product: product });
+    }
   } catch (error) {
     res.status(500).json({ message: error });
   }

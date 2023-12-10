@@ -7,7 +7,6 @@ const router = require("./routes/useRoutes.js");
 const Product = require("./models/productModel.js");
 const app = express();
 app.use(express.json());
-
 app.use(router);
 
 let PORT = 3000;
