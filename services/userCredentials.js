@@ -1,6 +1,7 @@
 require("../models/dbConnection");
 
 const bcrypt = require("bcrypt");
+const getTokens = require("../JWT/webToken");
 
 const Users = require("../models/users");
 
@@ -20,18 +21,21 @@ const getLogin = async (req, res) => {
     );
 
     if (!matchPassword) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: `userName or password not correct!, please Sign up`,
       });
-    } else
+    } else {
+      const accessToken = getTokens.createToken(user);
+      res.json({ accessToken });
+
       return res.status(200).json({
-        status: "Welcome to Home page👏",
-        message: "user Loged in successfully",
+        status: "Welcome to Home page",
+        message: "user Loged in successfully👏",
       });
+    }
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error happen when logging in" + error.message });
+    console.log(error);
+    // res.status(500).json({ message: "Error happen when logging in" + error });
   }
 };
 

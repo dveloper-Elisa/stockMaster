@@ -3,7 +3,6 @@ require("../models/dbConnection");
 
 // importing product Schema from Module
 const Product = require("../models/productModel");
-
 // displaying products
 const getProducts = async (req, res) => {
   try {

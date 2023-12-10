@@ -14,17 +14,16 @@ const updatingTheProduct = async (req, res, next) => {
     // finding the product to update
     const product = await Product.findOne({ name: productToSale.name });
     if (!product) {
-      res
+      return res
         .status(404)
         .json({ message: `${productToSale.name} not exist in the stock` });
     }
 
     productQuantity = product.quantity;
     if (productToSale.quantity > productQuantity) {
-      res.status(500).json({
+      return res.status(500).json({
         message: `${productToSale.quantity} is greater than ${product.quantity} available in stock`,
       });
-      return;
     }
     //   updating product quantity
 
@@ -43,9 +42,7 @@ const updatingTheProduct = async (req, res, next) => {
     if (!updatedProduct) {
       res.status(500).json({ message: "Product not Updated in the stock" });
       return;
-    }
-    res.status(200).json({ message: "Product updated successfully" });
-    next();
+    } else next();
   } catch (error) {}
 };
 
@@ -67,7 +64,12 @@ const soldProduct = async (req, res) => {
 
     if (!sales)
       res.status(500).json({ message: "Error while recording product sold" });
-    res.status(200).json({ message: "Product successfully sold and recorded" });
+    res
+      .status(200)
+      .json({
+        message: "Product successfully sold and recorded",
+        product: sales,
+      });
   } catch (error) {
     res
       .status(500)
@@ -75,7 +77,51 @@ const soldProduct = async (req, res) => {
   }
 };
 
+// Sales History API
+
+const salesHistory = async (req, res) => {
+  try {
+    const allSales = await Sales.find();
+    if (!allSales || allSales.length == 0) {
+      return res.status(401).json({ message: "Sales History not found" });
+    }
+    return res.json({ message: "Sales History generated", history: allSales });
+  } catch (error) {
+    res.status(500).json({
+      message: "sales history generation error" + " " + error.message,
+    });
+  }
+};
+
+// sales history generation depanding on dates
+const salesHistoryByDate = async (req, res) => {
+  try {
+    let specifiedDate = new Date(req.params.date);
+    specifiedDate.setHours(0, 0, 0, 0);
+
+    const endTheDay = new Date(specifiedDate);
+    endTheDay.setHours(23, 59, 59, 999);
+    const allSales = await Sales.find({
+      createdAt: {
+        $gt: specifiedDate,
+        $lt: endTheDay,
+      },
+    });
+    if (!allSales || allSales.length == 0) {
+      return res.status(401).json({ message: "Sales History not found" });
+    }
+    return res.json({ message: "Sales History generated", history: allSales });
+  } catch (error) {
+    res.status(500).json({
+      message: "sales history generation error" + " " + error.message,
+    });
+  }
+};
+// exporting modules
+
 module.exports = {
   soldProduct,
   updatingTheProduct,
+  salesHistory,
+  salesHistoryByDate,
 };
