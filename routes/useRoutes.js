@@ -17,6 +17,7 @@ const getToken = require("../JWT/webToken");
 
 router.post("/users/login", getUsers.getLogin);
 router.post("/users/signup", getUsers.getSignUp);
+router.post("/users/reset-password", getUsers.passwordReset);
 
 // ==============================================
 

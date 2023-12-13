@@ -18,6 +18,7 @@ const createToken = (user) => {
 const verifyTokens = (req, res, next) => {
   try {
     const bearToken = req.headers.authorization;
+    console.log(bearToken);
     if (!bearToken)
       return res.status(403).json({ message: "Access token required" });
     const token = bearToken.split(" ")[1];
