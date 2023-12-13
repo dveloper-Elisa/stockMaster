@@ -7,7 +7,7 @@ const createToken = (user) => {
     { userName: user.userName, password: user.password },
     process.env.TOKEN_SECRET,
     {
-      expiresIn: 60 * 60 * 1000,
+      expiresIn: 60 * 60 * 60 * 1000,
     }
   );
 
@@ -17,7 +17,10 @@ const createToken = (user) => {
 // verify the access token
 const verifyTokens = (req, res, next) => {
   try {
-    let token = req.body.token;
+    const bearToken = req.headers.authorization;
+    if (!bearToken)
+      return res.status(403).json({ message: "Access token required" });
+    const token = bearToken.split(" ")[1];
     const verifyToken = jwt.verify(token, process.env.TOKEN_SECRET);
 
     if (!verifyToken) {

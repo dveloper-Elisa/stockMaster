@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(router);
 
-let PORT = 3000;
+let PORT = process.env.PORT || 3000;
 // connection and listening the app
 mongoose.set("strictQuery", false);
 mongoose
