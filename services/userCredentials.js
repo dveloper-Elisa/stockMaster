@@ -15,29 +15,34 @@ const getLogin = async (req, res) => {
       password: req.body.password,
     };
 
-    // const matchPassword = await bcrypt.compare(user.password, await Use)
-
     const usersName = await Users.findOne({ userName: req.body.userName });
-    const matchPassword = await bcrypt.compare(
-      user.password,
-      usersName.password
-    );
 
-    if (!matchPassword) {
+    if (!usersName) {
       return res.status(400).json({
-        message: `userName or password not correct!, please Sign up`,
-      });
-    } else {
-      const accessToken = getTokens.createToken(user);
-      res.json({ accessToken });
-
-      return res.status(200).json({
-        status: "Welcome to Home page",
-        message: "user Loged in successfully👏",
+        message: `User not found!`,
       });
     }
+
+    const match = await bcrypt.compare(user.password, usersName.password);
+
+    if (!match) {
+      return res.status(400).json({
+        message: `Username or password is incorrect!`,
+      });
+    }
+
+    const accessToken = getTokens.createToken(user);
+    return res.status(200).json({
+      token: accessToken,
+      status: "Welcome to Home page",
+      message: "log in successfully👏",
+      statu: req.body,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 };
 
