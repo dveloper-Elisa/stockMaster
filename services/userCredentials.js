@@ -1,6 +1,7 @@
 require("../models/dbConnection");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 const bcrypt = require("bcrypt");
 const getTokens = require("../JWT/webToken");
@@ -65,6 +66,42 @@ const getSignUp = async (req, res) => {
     res
       .status(500)
       .json({ messae: "Error while creating account" + error.message });
+  }
+};
+
+// changing the password
+const changePassword = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const credetials = {
+      newPassword: req.body.newPassword,
+      confirmPassword: req.body.confirmPassword,
+    };
+
+    const credetialMatch =
+      credetials.newPassword === credetials.confirmPassword ? true : false;
+
+    if (credetialMatch) {
+      const hashedPassword = await bcrypt.hash(credetials.newPassword, 10);
+      jwt.verify(token, process.env.TOKEN_SECRET, async (error, decode) => {
+        if (error) return res.status(500).json({ message: error.message });
+        else {
+          const foundUser = await Users.findOneAndUpdate(
+            {
+              userName: decode.userName,
+            },
+            { password: hashedPassword },
+            { new: true }
+          );
+
+          return res.status(200).json({
+            users: `Password for ${foundUser.userName} chaged success fully`,
+          });
+        }
+      });
+    } else return res.status(500).json({ message: error.message });
+  } catch (error) {
+    res.status(501).json({ message: "Password not chaged due to mis match" });
   }
 };
 
@@ -133,4 +170,5 @@ module.exports = {
   getSignUp,
   getLogin,
   passwordReset,
+  changePassword,
 };
