@@ -11,19 +11,19 @@ const Users = require("../models/users");
 const getLogin = async (req, res) => {
   try {
     const user = {
-      userName: req.body.userName,
+      email: req.body.email,
       password: req.body.password,
     };
 
-    const usersName = await Users.findOne({ userName: req.body.userName });
+    const userFound = await Users.findOne({ email: req.body.email });
 
-    if (!usersName) {
+    if (!userFound) {
       return res.status(400).json({
         message: `User not found!`,
       });
     }
 
-    const match = await bcrypt.compare(user.password, usersName.password);
+    const match = await bcrypt.compare(user.password, userFound.password);
 
     if (!match) {
       return res.status(400).json({
@@ -34,9 +34,8 @@ const getLogin = async (req, res) => {
     const accessToken = getTokens.createToken(user);
     return res.status(200).json({
       token: accessToken,
-      status: "Welcome to Home page",
       message: "log in successfully👏",
-      statu: req.body,
+      email: req.body.email,
     });
   } catch (error) {
     console.error(error);
@@ -57,7 +56,7 @@ const getSignUp = async (req, res) => {
       password: hashedPassword,
     };
 
-    const userExists = await Users.findOne({ userName: users.userName });
+    const userExists = await Users.findOne({ email: users.email });
     if (!userExists) {
       const createUser = await Users.create(users);
       return res
@@ -65,7 +64,7 @@ const getSignUp = async (req, res) => {
         .json({ message: "User Created successfully 👏", user: createUser });
     }
     res.status(500).json({
-      mesage: `User with ${users.userName} have been taken`,
+      mesage: `User with ${users.email} have been taken`,
     });
   } catch (error) {
     res
@@ -93,7 +92,7 @@ const changePassword = async (req, res) => {
         else {
           const foundUser = await Users.findOneAndUpdate(
             {
-              userName: decode.userName,
+              email: decode.email,
             },
             { password: hashedPassword },
             { new: true }
