@@ -1,8 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 // connection
 require("../models/dbConnection");
 
 const router = express.Router();
+router.use(cors());
 
 // services imported
 

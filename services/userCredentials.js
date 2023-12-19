@@ -151,14 +151,12 @@ const passwordReset = async (req, res) => {
         else {
           // updating password
           let hashedNewPassword = await bcrypt.hash(generatedPassword, 10);
-          const passwordUpdated = await Users.findOneAndUpdate(
+          await Users.findOneAndUpdate(
             { email: email },
             { password: hashedNewPassword },
             { new: true }
           );
-
-          if (passwordUpdated)
-            return res.status(200).json({ message: "Email successfully sent" });
+          return res.status(200).json({ message: "Email sent successfully" });
         }
       });
     } else return res.status(404).json({ message: "Email not registered" });
