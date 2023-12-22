@@ -64,12 +64,12 @@ const getSignUp = async (req, res) => {
         .json({ message: "User Created successfully 👏", user: createUser });
     }
     res.status(500).json({
-      mesage: `User with ${users.email} have been taken`,
+      message: `User with <b>${users.email}</b> have been taken`,
     });
   } catch (error) {
     res
       .status(500)
-      .json({ messae: "Error while creating account" + error.message });
+      .json({ message: "Error while creating account" + error.message });
   }
 };
 
