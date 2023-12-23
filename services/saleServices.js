@@ -64,12 +64,10 @@ const soldProduct = async (req, res) => {
 
     if (!sales)
       res.status(500).json({ message: "Error while recording product sold" });
-    res
-      .status(200)
-      .json({
-        message: "Product successfully sold and recorded",
-        product: sales,
-      });
+    res.status(200).json({
+      message: "Product successfully sold and recorded",
+      product: sales,
+    });
   } catch (error) {
     res
       .status(500)
